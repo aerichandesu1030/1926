@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>筷子基知識問答</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(0, 20, 40, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            min-height: 600px;
+        }
+        
+        .wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23007bff" fill-opacity="0.3" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            z-index: 1;
+        }
+        
+        .screen {
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            color: #FFD700;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4DFFEA;
+        }
+        
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            color: #FFD700;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .input-group {
+            margin: 25px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid #4DFFEA;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(77, 255, 234, 0.5);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to right, #FFD700, #FF8C00);
+            color: #0a3d62;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-small {
+            width: auto;
+            padding: 10px 25px;
+            margin: 10px 5px;
+            display: inline-block;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid #4DFFEA;
+            position: relative;
+        }
+        
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .timer.warning {
+            color: #FF5555;
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .option {
+            background: rgba(10, 61, 98, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background: rgba(77, 255, 234, 0.3);
+            transform: scale(1.03);
+        }
+        
+        .option.correct {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .option.wrong {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .fishing-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .sea {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to bottom, #0a3d62, #1e90ff);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .boat {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 50% 50% 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: #FFD700;
+            animation: rock 3s infinite ease-in-out;
+        }
+        
+        @keyframes rock {
+            0%, 100% { transform: translateX(-50%) rotate(-2deg); }
+            50% { transform: translateX(-50%) rotate(2deg); }
+        }
+        
+        .fish {
+            position: absolute;
+            font-size: 2rem;
+            bottom: 10px;
+            animation: swim linear infinite;
+        }
+        
+        @keyframes swim {
+            from { left: -50px; }
+            to { left: calc(100% + 50px); }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #aaa;
+        }
+        
+        .leaderboard {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .leaderboard-item:nth-child(1) {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 140, 0, 0.3));
+        }
+        
+        .leaderboard-item:nth-child(2) {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.3), rgba(169, 169, 169, 0.3));
+        }
+        
+        .leaderboard-item:nth-child(3) {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.3), rgba(210, 180, 140, 0.3));
+        }
+        
+        .combo-display {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
+            color: #FFD700;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .fish-result {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 15px 0;
+            min-height: 60px;
+        }
+        
+        .fish-icon {
+            font-size: 3rem;
+            margin: 10px;
+            display: inline-block;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 1.1rem;
+            z-index: 100;
+            transform: translateX(200%);
+            transition: transform 0.3s ease-out;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .screen {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wave-bg"></div>
+        
+        <!-- 歡迎畫面 -->
+        <div id="welcome-screen" class="screen active">
+            <div class="logo">
+                <i class="fas fa-ship"></i>
+            </div>
+            <h1>筷子基知識問答挑戰</h1>
+            <p style="text-align: center; margin-bottom: 30px; font-size: 1.2rem; line-height: 1.6;">
+                考驗你剛從海報學到多少知識，答對問題獲得捕魚機會！<br>
+                每題限時10秒，連擊次數越多，捕獲珍貴魚種的機會越大！<br>
+                挑戰高分，登上排行榜！
+            </p>
+            
+            <div class="input-group">
+                <label for="player-name"><i class="fas fa-user"></i> 輸入你的暱稱</label>
+                <input type="text" id="player-name" placeholder="例如: 海王子">
+            </div>
+            
+            <button id="start-btn" class="btn">揚帆出海 <i class="fas fa-anchor"></i></button>
+        </div>
+        
+        <!-- 問答畫面 -->
+        <div id="quiz-screen" class="screen">
+            <h2>子基知識挑戰</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="score-display">0</div>
+                    <div class="stat-label">目前積分</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="combo-display">0</div>
+                    <div class="stat-label">連擊次數</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="player-name-display">-</div>
+                    <div class="stat-label">暱稱</div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="timer" id="timer">10</div>
+                <div class="question-text" id="question-text">問題載入中...</div>
+                <div class="options" id="options-container">
+                    <!-- 選項由JS生成 -->
+                </div>
+            </div>
+            
+            <div class="combo-display" id="combo-message"></div>
+        </div>
+        
+        <!-- 捕魚畫面 -->
+        <div id="fishing-screen" class="screen">
+            <h2>答題時間！</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="fishing-score">0</div>
+                    <div class="stat-label">目前積分</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="fishing-chances">3</div>
+                    <div class="stat-label">捕魚機會</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="combo-bonus">1.0x</div>
+                    <div class="stat-label">連擊加成</div>
+                </div>
+            </div>
+            
+            <div class="fishing-area">
+                <div class="sea" id="sea">
+                    <div class="boat">
+                        <i class="fas fa-ship"></i>
+                    </div>
+                    <!-- 魚會由JS動態生成 -->
+                </div>
+                
+                <button id="catch-fish-btn" class="btn">撒網捕魚 <i class="fas fa-fish"></i></button>
+                
+                <div class="fish-result" id="fish-result">
+                    點擊按鈕開始捕魚！
+                </div>
+            </div>
+        </div>
+        
+        <!-- 遊戲結束畫面 -->
+        <div id="gameover-screen" class="screen">
+            <h1>本次航程結束</h1>
+            <div class="logo">
+                <i class="fas fa-trophy"></i>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="final-score">0</div>
+                    <div class="stat-label">總積分</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="total-combo">0</div>
+                    <div class="stat-label">最高連擊</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="fish-caught">0</div>
+                    <div class="stat-label">捕獲魚數</div>
+                </div>
+            </div>
+            
+            <h2>排行榜</h2>
+            <div class="leaderboard" id="leaderboard">
+                <!-- 排行榜由JS生成 -->
+            </div>
+            
+            <button id="play-again-btn" class="btn">再次挑戰 <i class="fas fa-redo"></i></button>
+            <button id="new-player-btn" class="btn" style="background: linear-gradient(to right, #1e90ff, #3742fa);">新玩家 <i class="fas fa-user-plus"></i></button>
+        </div>
+        
+        <div class="notification" id="notification">訊息通知</div>
+    </div>
+
+    <script>
+        // 遊戲資料
+        const questions = [
+            {
+                question: "筷子基名稱的由來與以下哪個因素最相關？",
+                options: ["當地的筷子製造業","地形地貌","歷史上的漁村文化","古代的祭祀活動"],
+                answer: 1
+            },
+            {
+                question: "筷子基地區在澳門歷史發展中的地位主要是？",
+                options: ["交通樞紐", "文化交流中心", "經濟重鎮", "民生社區"],
+                answer: 3
+            },
+            {
+                question: "在筷子基地區，你可以看到哪種具有歷史文化價值的建築？",
+                options: ["瑪利亞之牆", "傳統中式廟宇", "葡式建築", "航站樓"],
+                answer: 2
+            },
+            {
+                question: "筷子基地區在歷史上曾經是？",
+                options: ["發達城市", "坦克製造地", "漁業社區", "宗教聖地"],
+                answer: 2
+            },
+            {
+                question: "筷子基的“五二八坊”後來改名為？",
+                options: ["筷子基坊", "白朗古坊", "沙梨頭坊", "澳氹坊"],
+                answer: 0
+            },
+            {
+                question: "五二八坊最初是為了紀念什麼而命名的？",
+                options: ["澳門回歸", "葡萄牙國家革新紀念日", "澳門建城日", "澳門首任總督"],
+                answer: 1
+            },
+            {
+                question: "筷子基地區的五二八坊後來被什麼取代了？",
+                options: ["氹仔坊眾學校", "民安大廈", "綠楊大廈", "筷子基平民大廈"],
+                answer: 3
+            },
+            {
+                question: "筷子基地區在1940年代發生了什麼變化？",
+                options: ["建成了賽狗場", "與澳門半島連成一體", "建成了平民大廈", "填海造地形成南灣和北灣"],
+                answer: 1
+            }
+        ];
+        
+        const fishTypes = [
+            { name: "小魚", points: 10, icon: "🐟", rarity: 0 },
+            { name: "鯖魚", points: 30, icon: "🐠", rarity: 1 },
+            { name: "鮭魚", points: 50, icon: "🐡", rarity: 2 },
+            { name: "鮪魚", points: 100, icon: "🐋", rarity: 3 },
+            { name: "金槍魚", points: 200, icon: "🔶", rarity: 4 },
+            { name: "黃金魚", points: 500, icon: "🌟", rarity: 5 }
+        ];
+        
+        // 遊戲狀態
+        let gameState = {
+            playerName: "",
+            score: 0,
+            combo: 0,
+            fishingChances: 0,
+            maxCombo: 0,
+            fishCaught: 0,
+            currentQuestion: 0,
+            isFishing: false,
+            timer: null,
+            timeLeft: 10
+        };
+        
+        // DOM 元素
+        const screens = {
+            welcome: document.getElementById('welcome-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            fishing: document.getElementById('fishing-screen'),
+            gameover: document.getElementById('gameover-screen')
+        };
+        
+        const notification = document.getElementById('notification');
+        const timerElement = document.getElementById('timer');
+        
+        // 切換畫面
+        function showScreen(screenName) {
+            Object.keys(screens).forEach(screen => {
+                screens[screen].classList.remove('active');
+            });
+            screens[screenName].classList.add('active');
+        }
+        
+        // 顯示通知
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 初始化遊戲
+        function initGame() {
+            const playerName = document.getElementById('player-name').value.trim();
+            if (!playerName) {
+                showNotification("請輸入暱稱！");
+                return;
+            }
+            
+            gameState = {
+                playerName: playerName,
+                score: 0,
+                combo: 0,
+                fishingChances: 0,
+                maxCombo: 0,
+                fishCaught: 0,
+                currentQuestion: 0,
+                isFishing: false,
+                timer: null,
+                timeLeft: 10
+            };
+            
+            document.getElementById('player-name-display').textContent = playerName;
+            document.getElementById('score-display').textContent = "0";
+            document.getElementById('combo-display').textContent = "0";
+            
+            loadQuestion();
+            showScreen('quiz');
+        }
+        
+        // 開始計時器
+        function startTimer() {
+            // 清除之前的計時器
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+            
+            gameState.timeLeft = 10;
+            timerElement.textContent = gameState.timeLeft;
+            timerElement.classList.remove('warning');
+            
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                timerElement.textContent = gameState.timeLeft;
+                
+                // 最後3秒變色閃爍
+                if (gameState.timeLeft <= 3) {
+                    timerElement.classList.add('warning');
+                }
+                
+                // 時間到
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        // 時間到處理
+        function timeUp() {
+            const question = questions[gameState.currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            // 禁用所有選項
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 標記正確答案
+            options[question.answer].classList.add('correct');
+            
+            // 連擊中斷
+            document.getElementById('combo-message').textContent = "時間到！連擊中斷";
+            gameState.combo = 0;
+            document.getElementById('combo-display').textContent = "0";
+            
+            setTimeout(() => {
+                endGame();
+            }, 1500);
+        }
+        
+        // 載入問題
+        function loadQuestion() {
+            const question = questions[gameState.currentQuestion];
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', () => checkAnswer(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // 開始計時
+            startTimer();
+        }
+        
+        // 檢查答案
+        function checkAnswer(selectedIndex) {
+            // 停止計時器
+            clearInterval(gameState.timer);
+            
+            const question = questions[gameState.currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            // 禁用所有選項
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 標記正確和錯誤答案
+            options[question.answer].classList.add('correct');
+            if (selectedIndex !== question.answer) {
+                options[selectedIndex].classList.add('wrong');
+                
+                // 答錯處理
+                document.getElementById('combo-message').textContent = "答錯了！連擊中斷";
+                gameState.combo = 0;
+                document.getElementById('combo-display').textContent = "0";
+                
+                setTimeout(() => {
+                    endGame();
+                }, 1500);
+            } else {
+                // 答對處理
+                gameState.combo++;
+                gameState.score += 10 * gameState.combo;
+                gameState.fishingChances++;
+                
+                if (gameState.combo > gameState.maxCombo) {
+                    gameState.maxCombo = gameState.combo;
+                }
+                
+                document.getElementById('score-display').textContent = gameState.score;
+                document.getElementById('combo-display').textContent = gameState.combo;
+                
+                let message = "答對了！";
+                if (gameState.combo >= 3) {
+                    message += ` ${gameState.combo}連擊！`;
+                }
+                document.getElementById('combo-message').textContent = message;
+                
+                setTimeout(() => {
+                    gameState.currentQuestion++;
+                    
+                    if (gameState.currentQuestion >= questions.length) {
+                        startFishing();
+                    } else {
+                        loadQuestion();
+                        // 重新啟用選項
+                        options.forEach(option => {
+                            option.style.pointerEvents = 'auto';
+                            option.classList.remove('correct', 'wrong');
+                        });
+                    }
+                }, 1500);
+            }
+        }
+        
+        // 開始捕魚
+        function startFishing() {
+            document.getElementById('fishing-score').textContent = gameState.score;
+            document.getElementById('fishing-chances').textContent = gameState.fishingChances;
+            document.getElementById('combo-bonus').textContent = (1 + gameState.combo * 0.2).toFixed(1) + "x";
+            showScreen('fishing');
+            
+            // 生成魚的動畫
+            generateFish();
+        }
+        
+        // 生成魚的動畫
+        function generateFish() {
+            const sea = document.getElementById('sea');
+            sea.innerHTML = '<div class="boat"><i class="fas fa-ship"></i></div>';
+            
+            for (let i = 0; i < 15; i++) {
+                const fish = document.createElement('div');
+                fish.className = 'fish';
+                fish.innerHTML = fishTypes[Math.floor(Math.random() * 4)].icon;
+                
+                // 隨機位置和速度
+                const bottom = Math.random() * 60 + 10;
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * 10;
+                
+                fish.style.bottom = `${bottom}px`;
+                fish.style.animationDuration = `${duration}s`;
+                fish.style.animationDelay = `${delay}s`;
+                
+                sea.appendChild(fish);
+            }
+        }
+        
+        // 捕魚
+        function catchFish() {
+            if (gameState.fishingChances <= 0) {
+                endGame();
+                return;
+            }
+            
+            gameState.fishingChances--;
+            gameState.fishCaught++;
+            
+            document.getElementById('fishing-chances').textContent = gameState.fishingChances;
+            
+            // 計算捕獲的魚
+            const bonus = 1 + gameState.combo * 0.2;
+            const fishIndex = getRandomFishByRarity();
+            const fish = fishTypes[fishIndex];
+            const points = Math.floor(fish.points * bonus);
+            
+            gameState.score += points;
+            document.getElementById('fishing-score').textContent = gameState.score;
+            
+            // 顯示結果
+            const resultElement = document.getElementById('fish-result');
+            resultElement.innerHTML = `
+                <div class="fish-icon">${fish.icon}</div>
+                <div>捕獲 ${fish.name}！</div>
+                <div>獲得 ${points} 積分</div>
+                <div>連擊加成: ${bonus.toFixed(1)}x</div>
+            `;
+            
+            // 更新魚的動畫
+            generateFish();
+            
+            // 如果沒有捕魚機會，結束遊戲
+            if (gameState.fishingChances <= 0) {
+                setTimeout(() => {
+                    endGame();
+                }, 3000);
+            }
+        }
+        
+        // 根據稀有度隨機獲取魚
+        function getRandomFishByRarity() {
+            const rand = Math.random() * 100;
+            
+            if (gameState.combo >= 5 && rand < 10) return 5; // 黃金魚 10%
+            if (gameState.combo >= 4 && rand < 20) return 4; // 金槍魚 20%
+            if (gameState.combo >= 3 && rand < 40) return 3; // 鮪魚 40%
+            if (gameState.combo >= 2 && rand < 70) return 2; // 鮭魚 70%
+            if (rand < 90) return 1; // 鯖魚 90%
+            return 0; // 小魚 100%
+        }
+        
+        // 結束遊戲
+        function endGame() {
+            // 停止計時器
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+            }
+            
+            // 更新最終分數
+            document.getElementById('final-score').textContent = gameState.score;
+            document.getElementById('total-combo').textContent = gameState.maxCombo;
+            document.getElementById('fish-caught').textContent = gameState.fishCaught;
+            
+            // 保存遊戲記錄
+            saveGameRecord();
+            
+            // 顯示排行榜
+            displayLeaderboard();
+            
+            showScreen('gameover');
+        }
+        
+        // 保存遊戲記錄
+        function saveGameRecord() {
+            let records = JSON.parse(localStorage.getItem('fishingRecords')) || [];
+            
+            records.push({
+                name: gameState.playerName,
+                score: gameState.score,
+                date: new Date().toLocaleDateString()
+            });
+            
+            // 按分數排序
+            records.sort((a, b) => b.score - a.score);
+            
+            // 只保留前10名
+            if (records.length > 10) {
+                records = records.slice(0, 10);
+            }
+            
+            localStorage.setItem('fishingRecords', JSON.stringify(records));
+        }
+        
+        // 顯示排行榜
+        function displayLeaderboard() {
+            const records = JSON.parse(localStorage.getItem('fishingRecords')) || [];
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.innerHTML = '';
+            
+            if (records.length === 0) {
+                leaderboard.innerHTML = '<div class="leaderboard-item">尚無記錄，成為第一位漁夫！</div>';
+                return;
+            }
+            
+            records.forEach((record, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                
+                const rank = document.createElement('span');
+                rank.innerHTML = `<span style="font-weight: bold;">${index + 1}.</span> ${record.name}`;
+                
+                const score = document.createElement('span');
+                score.textContent = `${record.score} 分`;
+                
+                const date = document.createElement('span');
+                date.textContent = record.date;
+                date.style.fontSize = '0.9rem';
+                date.style.color = '#aaa';
+                
+                item.appendChild(rank);
+                item.appendChild(score);
+                item.appendChild(date);
+                
+                leaderboard.appendChild(item);
+            });
+        }
+        
+        // 事件監聽器
+        document.getElementById('start-btn').addEventListener('click', initGame);
+        document.getElementById('catch-fish-btn').addEventListener('click', catchFish);
+        document.getElementById('play-again-btn').addEventListener('click', () => {
+            gameState.currentQuestion = 0;
+            gameState.combo = 0;
+            gameState.fishingChances = 0;
+            loadQuestion();
+            showScreen('quiz');
+        });
+        document.getElementById('new-player-btn').addEventListener('click', () => {
+            showScreen('welcome');
+        });
+        
+        // 初始化顯示排行榜
+        displayLeaderboard();
+    </script>
+</body>
+</html>
